@@ -1,0 +1,11 @@
+{
+  "name": "advent-of-code-2024",
+  "private": true,
+  "scripts": {
+    "format": "dotnet format --",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
