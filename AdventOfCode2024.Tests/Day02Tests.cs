@@ -2,21 +2,21 @@ using AdventOfCode2024.Lib;
 
 namespace AdventOfCode2024.Tests;
 
-public class Day01Tests
+public class Day02Tests
 {
     private readonly IDay _day;
     private readonly string _input;
 
-    public Day01Tests()
+    public Day02Tests()
     {
-        _day = new Day01();
+        _day = new Day02();
         _input = """
-                 3   4
-                 4   3
-                 2   5
-                 1   3
-                 3   9
-                 3   3
+                 7 6 4 2 1
+                 1 2 7 8 9
+                 9 7 6 2 1
+                 1 3 2 4 5
+                 8 6 4 4 1
+                 1 3 6 7 9
                  """;
     }
 
@@ -24,13 +24,13 @@ public class Day01Tests
     public void PartOneTest()
     {
         var result = _day.PartOne(_input);
-        Assert.Equal("11", result);
+        Assert.Equal("2", result);
     }
 
     [Fact]
     public void PartTwoTest()
     {
         var result = _day.PartTwo(_input);
-        Assert.Equal("31", result);
+        Assert.Equal("4", result);
     }
 }
