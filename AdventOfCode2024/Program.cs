@@ -1,27 +1,47 @@
+using System.Diagnostics;
+using System.Reflection;
+using AdventOfCode2024.Lib;
+
 namespace AdventOfCode2024;
 
-internal class Program
+internal static class Program
 {
     private static void Main(string[] args)
     {
-        var day01 = new Day01();
-        var day01Input = File.ReadAllText("Day01/input.txt");
+        var dayNumbersToRun = args.Length > 0
+            ? args.Select(int.Parse).ToHashSet()
+            : null;
 
-        var day1p1 = day01.PartOne(day01Input);
-        var day1p2 = day01.PartTwo(day01Input);
+        var executablePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        Debug.Assert(executablePath != null, nameof(executablePath) + " != null");
+        var projectRoot = Path.Combine(executablePath, "..", "..", "..");
 
-        Console.WriteLine("=== Day 1 ===");
-        Console.WriteLine(day1p1);
-        Console.WriteLine(day1p2);
+        var dayTypes = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => typeof(IDay).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+            .OrderBy(t => t.Name);
 
-        var day02 = new Day02();
-        var day02Input = File.ReadAllText("Day02/input.txt");
+        foreach (var dayType in dayTypes)
+        {
+            var dayInstance = (IDay)Activator.CreateInstance(dayType)!;
 
-        var day2p1 = day02.PartOne(day02Input);
-        var day2p2 = day02.PartTwo(day02Input);
+            if (dayInstance == null) throw new Exception($"Day {dayType.Name} is not a valid day.");
 
-        Console.WriteLine("=== Day 2 ===");
-        Console.WriteLine(day2p1);
-        Console.WriteLine(day2p2);
+            var dayNumberString = new string(dayType.Name.SkipWhile(c => !char.IsDigit(c)).ToArray());
+            var dayNumber = int.Parse(dayNumberString);
+
+            if (dayNumbersToRun != null && !dayNumbersToRun.Contains(dayNumber))
+                continue;
+
+            var inputPath = Path.Combine(projectRoot, $"Day{dayNumberString}", "input.txt");
+            var input = File.ReadAllText(inputPath);
+
+            var partOneResult = dayInstance.PartOne(input);
+            var partTwoResult = dayInstance.PartTwo(input);
+
+            Console.WriteLine($"> Day {dayNumber} <");
+            Console.WriteLine($"Part 1: {partOneResult}");
+            Console.WriteLine($"Part 2: {partTwoResult}");
+        }
     }
 }
